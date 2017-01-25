@@ -27,7 +27,7 @@ describe('Router', function(){
     });
     router.use('/foo', another);
 
-    router.handle({ url: '/foo/bar', method: 'GET' }, { end: done });
+    router.handle({ url: '/foo/bar', method: 'GET' }, { end: done }, function(){});
   });
 
   it('should support dynamic routes', function(done){
@@ -40,7 +40,7 @@ describe('Router', function(){
     });
     router.use('/:foo', another);
 
-    router.handle({ url: '/test/route', method: 'GET' }, { end: done });
+    router.handle({ url: '/test/route', method: 'GET' }, { end: done }, function(){});
   });
 
   it('should handle blank URL', function(done){
@@ -51,6 +51,21 @@ describe('Router', function(){
     });
 
     router.handle({ url: '', method: 'GET' }, {}, done);
+  });
+
+  it('should not stack overflow with many registered routes', function(done){
+    var handler = function(req, res){ res.end(new Error('wrong handler')) };
+    var router = new Router();
+
+    for (var i = 0; i < 6000; i++) {
+      router.get('/thing' + i, handler)
+    }
+
+    router.get('/', function (req, res) {
+      res.end();
+    });
+
+    router.handle({ url: '/', method: 'GET' }, { end: done }, function(){});
   });
 
   describe('.handle', function(){
@@ -67,7 +82,7 @@ describe('Router', function(){
           done();
         }
       }
-      router.handle({ url: '/foo', method: 'GET' }, res);
+      router.handle({ url: '/foo', method: 'GET' }, res, function(){});
     })
   })
 
@@ -327,15 +342,15 @@ describe('Router', function(){
   describe('.use', function() {
     it('should require arguments', function(){
       var router = new Router();
-      router.use.bind(router).should.throw(/requires middleware function/)
+      assert.throws(router.use.bind(router), /argument handler is required/)
     })
 
     it('should not accept non-functions', function(){
       var router = new Router();
-      router.use.bind(router, '/', 'hello').should.throw(/requires middleware function.*string/)
-      router.use.bind(router, '/', 5).should.throw(/requires middleware function.*number/)
-      router.use.bind(router, '/', null).should.throw(/requires middleware function.*Null/)
-      router.use.bind(router, '/', new Date()).should.throw(/requires middleware function.*Date/)
+      assert.throws(router.use.bind(router, '/', 'hello'), /argument handler must be a function/)
+      assert.throws(router.use.bind(router, '/', 5), /argument handler must be a function/)
+      assert.throws(router.use.bind(router, '/', null), /argument handler must be a function/)
+      assert.throws(router.use.bind(router, '/', new Date()), /argument handler must be a function/)
     })
 
     it('should accept array of middleware', function(done){
@@ -362,6 +377,16 @@ describe('Router', function(){
   })
 
   describe('.param', function() {
+    it('should require function', function () {
+      var router = new Router();
+      assert.throws(router.param.bind(router, 'id'), /argument fn is required/);
+    });
+
+    it('should reject non-function', function () {
+      var router = new Router();
+      assert.throws(router.param.bind(router, 'id', 42), /argument fn must be a function/);
+    });
+
     it('should call param function when routing VERBS', function(done) {
       var router = new Router();
 
