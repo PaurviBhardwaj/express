@@ -7,6 +7,7 @@ var onFinished = require('on-finished');
 var path = require('path');
 var should = require('should');
 var fixtures = path.join(__dirname, 'fixtures');
+var utils = require('./support/utils');
 
 describe('res', function(){
   describe('.sendFile(path)', function () {
@@ -32,6 +33,31 @@ describe('res', function(){
       request(app)
       .get('/')
       .expect(200, '20%', done);
+    });
+
+    it('should include ETag', function (done) {
+      var app = createApp(path.resolve(fixtures, 'name.txt'));
+
+      request(app)
+      .get('/')
+      .expect('ETag', /^(?:W\/)?"[^"]+"$/)
+      .expect(200, 'tobi', done);
+    });
+
+    it('should 304 when ETag matches', function (done) {
+      var app = createApp(path.resolve(fixtures, 'name.txt'));
+
+      request(app)
+      .get('/')
+      .expect('ETag', /^(?:W\/)?"[^"]+"$/)
+      .expect(200, 'tobi', function (err, res) {
+        if (err) return done(err);
+        var etag = res.headers.etag;
+        request(app)
+        .get('/')
+        .set('If-None-Match', etag)
+        .expect(304, done);
+      });
     });
 
     it('should 404 for directory', function (done) {
@@ -67,6 +93,27 @@ describe('res', function(){
       .get('/')
       .expect('Content-Type', 'application/x-bogus')
       .end(done);
+    })
+
+    it('should not error if the client aborts', function (done) {
+      var cb = after(1, done);
+      var app = express();
+
+      app.use(function (req, res) {
+        setImmediate(function () {
+          res.sendFile(path.resolve(fixtures, 'name.txt'));
+          cb();
+        });
+        test.abort();
+      });
+
+      app.use(function (err, req, res, next) {
+        err.code.should.be.empty;
+        cb();
+      });
+
+      var test = request(app).get('/');
+      test.expect(200, cb);
     })
 
     describe('with "dotfiles" option', function () {
@@ -108,11 +155,8 @@ describe('res', function(){
 
         request(app)
         .get('/')
-        .expect(404, function (err, res) {
-          if (err) return done(err);
-          res.headers.should.not.have.property('x-success');
-          done();
-        });
+        .expect(utils.shouldNotHaveHeader('X-Success'))
+        .expect(404, done);
       });
     });
 
@@ -161,7 +205,7 @@ describe('res', function(){
         setImmediate(function () {
           res.sendFile(path.resolve(fixtures, 'name.txt'), function (err) {
             should(err).be.ok;
-            err.code.should.equal('ECONNABORT');
+            err.code.should.equal('ECONNABORTED');
             cb();
           });
         });
@@ -180,7 +224,7 @@ describe('res', function(){
         onFinished(res, function () {
           res.sendFile(path.resolve(fixtures, 'name.txt'), function (err) {
             should(err).be.ok;
-            err.code.should.equal('ECONNABORT');
+            err.code.should.equal('ECONNABORTED');
             cb();
           });
         });
@@ -190,6 +234,40 @@ describe('res', function(){
       var test = request(app).get('/');
       test.expect(200, cb);
     })
+
+    it('should invoke the callback without error when HEAD', function (done) {
+      var app = express();
+      var cb = after(2, done);
+
+      app.use(function (req, res) {
+        res.sendFile(path.resolve(fixtures, 'name.txt'), cb);
+      });
+
+      request(app)
+      .head('/')
+      .expect(200, cb);
+    });
+
+    it('should invoke the callback without error when 304', function (done) {
+      var app = express();
+      var cb = after(3, done);
+
+      app.use(function (req, res) {
+        res.sendFile(path.resolve(fixtures, 'name.txt'), cb);
+      });
+
+      request(app)
+      .get('/')
+      .expect('ETag', /^(?:W\/)?"[^"]+"$/)
+      .expect(200, 'tobi', function (err, res) {
+        if (err) return cb(err);
+        var etag = res.headers.etag;
+        request(app)
+        .get('/')
+        .set('If-None-Match', etag)
+        .expect(304, cb);
+      });
+    });
 
     it('should invoke the callback on 404', function(done){
       var app = express();
@@ -205,6 +283,14 @@ describe('res', function(){
       request(app)
       .get('/')
       .expect(200, 'got it', done);
+    })
+  })
+
+  describe('.sendFile(path, options)', function () {
+    it('should pass options to send module', function (done) {
+      request(createApp(path.resolve(fixtures, 'name.txt'), { start: 0, end: 1 }))
+      .get('/')
+      .expect(200, 'to', done)
     })
   })
 })
