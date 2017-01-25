@@ -2,16 +2,16 @@
  * Module dependencies.
  */
 
-var express = require('../../');
+let express = require('../../');
 
-var app = module.exports = express();
+let app = module.exports = express();
 
 // create an error with .status. we
 // can then use the property in our
 // custom error handler (Connect repects this prop as well)
 
 function error(status, msg) {
-  var err = new Error(msg);
+  let err = new Error(msg);
   err.status = status;
   return err;
 }
@@ -25,8 +25,8 @@ function error(status, msg) {
 // meaning only paths prefixed with "/api"
 // will cause this middleware to be invoked
 
-app.use('/api', function(req, res, next){
-  var key = req.query['api-key'];
+app.use('/api', function(req, res, next) {
+  let key = req.query['api-key'];
 
   // key isn't present
   if (!key) return next(error(400, 'api key required'));
@@ -48,38 +48,38 @@ var apiKeys = ['foo', 'bar', 'baz'];
 
 // these two objects will serve as our faux database
 
-var repos = [
-    { name: 'express', url: 'http://github.com/expressjs/express' }
-  , { name: 'stylus', url: 'http://github.com/learnboost/stylus' }
-  , { name: 'cluster', url: 'http://github.com/learnboost/cluster' }
+let repos = [
+    {name: 'express', url: 'http://github.com/expressjs/express'},
+   {name: 'stylus', url: 'http://github.com/learnboost/stylus'},
+   {name: 'cluster', url: 'http://github.com/learnboost/cluster'},
 ];
 
-var users = [
-    { name: 'tobi' }
-  , { name: 'loki' }
-  , { name: 'jane' }
+let users = [
+    {name: 'tobi'},
+   {name: 'loki'},
+   {name: 'jane'},
 ];
 
-var userRepos = {
-    tobi: [repos[0], repos[1]]
-  , loki: [repos[1]]
-  , jane: [repos[2]]
+let userRepos = {
+    tobi: [repos[0], repos[1]],
+   loki: [repos[1]],
+   jane: [repos[2]],
 };
 
 // we now can assume the api key is valid,
 // and simply expose the data
 
-app.get('/api/users', function(req, res, next){
+app.get('/api/users', function(req, res, next) {
   res.send(users);
 });
 
-app.get('/api/repos', function(req, res, next){
+app.get('/api/repos', function(req, res, next) {
   res.send(repos);
 });
 
-app.get('/api/user/:name/repos', function(req, res, next){
-  var name = req.params.name;
-  var user = userRepos[name];
+app.get('/api/user/:name/repos', function(req, res, next) {
+  let name = req.params.name;
+  let user = userRepos[name];
 
   if (user) res.send(user);
   else next();
@@ -90,19 +90,19 @@ app.get('/api/user/:name/repos', function(req, res, next){
 // it will be passed through the defined middleware
 // in order, but ONLY those with an arity of 4, ignoring
 // regular middleware.
-app.use(function(err, req, res, next){
+app.use(function(err, req, res, next) {
   // whatever you want here, feel free to populate
   // properties on `err` to treat it differently in here.
   res.status(err.status || 500);
-  res.send({ error: err.message });
+  res.send({error: err.message});
 });
 
 // our custom JSON 404 middleware. Since it's placed last
 // it will be the last middleware called, if all others
 // invoke next() and do not respond.
-app.use(function(req, res){
+app.use(function(req, res) {
   res.status(404);
-  res.send({ error: "Lame, can't find that" });
+  res.send({error: "Lame, can't find that"});
 });
 
 /* istanbul ignore next */

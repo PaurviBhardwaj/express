@@ -2,11 +2,11 @@
  * Module dependencies.
  */
 
-var express = require('../../');
-var app = module.exports = express();
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+let express = require('../../');
+let app = module.exports = express();
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
 // custom log format
 if ('test' != process.env.NODE_ENV) app.use(logger(':method :url'));
@@ -18,9 +18,9 @@ if ('test' != process.env.NODE_ENV) app.use(logger(':method :url'));
 app.use(cookieParser('my secret here'));
 
 // parses x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   if (req.cookies.remember) {
     res.send('Remembered :). Click to <a href="/forget">forget</a>!.');
   } else {
@@ -30,14 +30,14 @@ app.get('/', function(req, res){
   }
 });
 
-app.get('/forget', function(req, res){
+app.get('/forget', function(req, res) {
   res.clearCookie('remember');
   res.redirect('back');
 });
 
-app.post('/', function(req, res){
-  var minute = 60000;
-  if (req.body.remember) res.cookie('remember', 1, { maxAge: minute });
+app.post('/', function(req, res) {
+  let minute = 60000;
+  if (req.body.remember) res.cookie('remember', 1, {maxAge: minute});
   res.redirect('back');
 });
 

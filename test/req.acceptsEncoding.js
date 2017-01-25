@@ -1,13 +1,13 @@
 
-var express = require('../')
-  , request = require('supertest');
+let express = require('../'),
+   request = require('supertest');
 
-describe('req', function(){
-  describe('.acceptsEncoding', function(){
-    it('should be true if encoding accepted', function(done){
-      var app = express();
+describe('req', function() {
+  describe('.acceptsEncoding', function() {
+    it('should be true if encoding accepted', function(done) {
+      let app = express();
 
-      app.use(function(req, res){
+      app.use(function(req, res) {
         req.acceptsEncoding('gzip').should.be.ok;
         req.acceptsEncoding('deflate').should.be.ok;
         res.end();
@@ -17,12 +17,12 @@ describe('req', function(){
       .get('/')
       .set('Accept-Encoding', ' gzip, deflate')
       .expect(200, done);
-    })
+    });
 
-    it('should be false if encoding not accepted', function(done){
-      var app = express();
+    it('should be false if encoding not accepted', function(done) {
+      let app = express();
 
-      app.use(function(req, res){
+      app.use(function(req, res) {
         req.acceptsEncoding('bogus').should.not.be.ok;
         res.end();
       });
@@ -31,6 +31,6 @@ describe('req', function(){
       .get('/')
       .set('Accept-Encoding', ' gzip, deflate')
       .expect(200, done);
-    })
-  })
-})
+    });
+  });
+});

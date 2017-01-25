@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var express = require('../../');
+let express = require('../../');
 
-var app = module.exports = express();
+let app = module.exports = express();
 
 // Register ejs as .html. If we did
 // not call this, we would need to
@@ -29,17 +29,17 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 
 // Dummy users
-var users = [
-  { name: 'tobi', email: 'tobi@learnboost.com' },
-  { name: 'loki', email: 'loki@learnboost.com' },
-  { name: 'jane', email: 'jane@learnboost.com' }
+let users = [
+  {name: 'tobi', email: 'tobi@learnboost.com'},
+  {name: 'loki', email: 'loki@learnboost.com'},
+  {name: 'jane', email: 'jane@learnboost.com'},
 ];
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.render('users', {
     users: users,
-    title: "EJS example",
-    header: "Some users"
+    title: 'EJS example',
+    header: "Some users",
   });
 });
 

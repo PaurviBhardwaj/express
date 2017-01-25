@@ -1,27 +1,27 @@
 
-var after = require('after');
-var express = require('..');
-var request = require('supertest');
+let after = require('after');
+let express = require('..');
+let request = require('supertest');
 
-describe('app', function(){
-  it('should emit "mount" when mounted', function(done){
-    var blog = express()
-      , app = express();
+describe('app', function() {
+  it('should emit "mount" when mounted', function(done) {
+    let blog = express(),
+       app = express();
 
-    blog.on('mount', function(arg){
+    blog.on('mount', function(arg) {
       arg.should.equal(app);
       done();
     });
 
     app.use(blog);
-  })
+  });
 
-  describe('.use(app)', function(){
-    it('should mount the app', function(done){
-      var blog = express()
-        , app = express();
+  describe('.use(app)', function() {
+    it('should mount the app', function(done) {
+      let blog = express(),
+         app = express();
 
-      blog.get('/blog', function(req, res){
+      blog.get('/blog', function(req, res) {
         res.end('blog');
       });
 
@@ -30,18 +30,18 @@ describe('app', function(){
       request(app)
       .get('/blog')
       .expect('blog', done);
-    })
+    });
 
-    it('should support mount-points', function(done){
-      var blog = express()
-        , forum = express()
-        , app = express();
+    it('should support mount-points', function(done) {
+      let blog = express(),
+         forum = express(),
+         app = express();
 
-      blog.get('/', function(req, res){
+      blog.get('/', function(req, res) {
         res.end('blog');
       });
 
-      forum.get('/', function(req, res){
+      forum.get('/', function(req, res) {
         res.end('forum');
       });
 
@@ -50,26 +50,26 @@ describe('app', function(){
 
       request(app)
       .get('/blog')
-      .expect('blog', function(){
+      .expect('blog', function() {
         request(app)
         .get('/forum')
         .expect('forum', done);
       });
-    })
+    });
 
-    it('should set the child\'s .parent', function(){
-      var blog = express()
-        , app = express();
+    it('should set the child\'s .parent', function() {
+      let blog = express(),
+         app = express();
 
       app.use('/blog', blog);
       blog.parent.should.equal(app);
-    })
+    });
 
-    it('should support dynamic routes', function(done){
-      var blog = express()
-        , app = express();
+    it('should support dynamic routes', function(done) {
+      let blog = express(),
+         app = express();
 
-      blog.get('/', function(req, res){
+      blog.get('/', function(req, res) {
         res.end('success');
       });
 
@@ -78,13 +78,13 @@ describe('app', function(){
       request(app)
       .get('/post/once-upon-a-time')
       .expect('success', done);
-    })
+    });
 
-    it('should support mounted app anywhere', function(done){
-      var cb = after(3, done);
-      var blog = express()
-        , other = express()
-        , app = express();
+    it('should support mounted app anywhere', function(done) {
+      let cb = after(3, done);
+      let blog = express(),
+         other = express(),
+         app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -96,15 +96,15 @@ describe('app', function(){
         next();
       }
 
-      blog.get('/', function(req, res){
+      blog.get('/', function(req, res) {
         res.end('success');
       });
 
-      blog.once('mount', function (parent) {
+      blog.once('mount', function(parent) {
         parent.should.equal(app);
         cb();
       });
-      other.once('mount', function (parent) {
+      other.once('mount', function(parent) {
         parent.should.equal(app);
         cb();
       });
@@ -116,12 +116,12 @@ describe('app', function(){
       .expect('x-fn-1', 'hit')
       .expect('x-fn-2', 'hit')
       .expect('success', cb);
-    })
-  })
+    });
+  });
 
-  describe('.use(middleware)', function(){
-    it('should accept multiple arguments', function (done) {
-      var app = express();
+  describe('.use(middleware)', function() {
+    it('should accept multiple arguments', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -144,13 +144,13 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should invoke middleware for all requests', function (done) {
-      var app = express();
-      var cb = after(3, done);
+    it('should invoke middleware for all requests', function(done) {
+      let app = express();
+      let cb = after(3, done);
 
-      app.use(function (req, res) {
+      app.use(function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url);
       });
 
@@ -165,10 +165,10 @@ describe('app', function(){
       request(app)
       .post('/foo')
       .expect(200, 'saw POST /foo', cb);
-    })
+    });
 
-    it('should accept array of middleware', function (done) {
-      var app = express();
+    it('should accept array of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -193,10 +193,10 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should accept multiple arrays of middleware', function (done) {
-      var app = express();
+    it('should accept multiple arrays of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -221,10 +221,10 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should accept nested arrays of middleware', function (done) {
-      var app = express();
+    it('should accept nested arrays of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -249,37 +249,37 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
-  })
+    });
+  });
 
-  describe('.use(path, middleware)', function(){
-    it('should reject missing functions', function () {
-      var app = express();
+  describe('.use(path, middleware)', function() {
+    it('should reject missing functions', function() {
+      let app = express();
       app.use.bind(app, '/').should.throw(/requires middleware function/);
-    })
+    });
 
-    it('should reject non-functions as middleware', function () {
-      var app = express();
+    it('should reject non-functions as middleware', function() {
+      let app = express();
       app.use.bind(app, '/', 'hi').should.throw(/requires middleware function.*string/);
       app.use.bind(app, '/', 5).should.throw(/requires middleware function.*number/);
       app.use.bind(app, '/', null).should.throw(/requires middleware function.*Null/);
       app.use.bind(app, '/', new Date()).should.throw(/requires middleware function.*Date/);
-    })
+    });
 
-    it('should strip path from req.url', function (done) {
-      var app = express();
+    it('should strip path from req.url', function(done) {
+      let app = express();
 
-      app.use('/foo', function (req, res) {
+      app.use('/foo', function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url);
       });
 
       request(app)
       .get('/foo/bar')
       .expect(200, 'saw GET /bar', done);
-    })
+    });
 
-    it('should accept multiple arguments', function (done) {
-      var app = express();
+    it('should accept multiple arguments', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -302,13 +302,13 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should invoke middleware for all requests starting with path', function (done) {
-      var app = express();
-      var cb = after(3, done);
+    it('should invoke middleware for all requests starting with path', function(done) {
+      let app = express();
+      let cb = after(3, done);
 
-      app.use('/foo', function (req, res) {
+      app.use('/foo', function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url);
       });
 
@@ -323,13 +323,13 @@ describe('app', function(){
       request(app)
       .post('/foo/bar')
       .expect(200, 'saw POST /bar', cb);
-    })
+    });
 
-    it('should work if path has trailing slash', function (done) {
-      var app = express();
-      var cb = after(3, done);
+    it('should work if path has trailing slash', function(done) {
+      let app = express();
+      let cb = after(3, done);
 
-      app.use('/foo/', function (req, res) {
+      app.use('/foo/', function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url);
       });
 
@@ -344,10 +344,10 @@ describe('app', function(){
       request(app)
       .post('/foo/bar')
       .expect(200, 'saw POST /bar', cb);
-    })
+    });
 
-    it('should accept array of middleware', function (done) {
-      var app = express();
+    it('should accept array of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -372,10 +372,10 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should accept multiple arrays of middleware', function (done) {
-      var app = express();
+    it('should accept multiple arrays of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -400,10 +400,10 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should accept nested arrays of middleware', function (done) {
-      var app = express();
+    it('should accept nested arrays of middleware', function(done) {
+      let app = express();
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -428,13 +428,13 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, done);
-    })
+    });
 
-    it('should support array of paths', function (done) {
-      var app = express();
-      var cb = after(3, done);
+    it('should support array of paths', function(done) {
+      let app = express();
+      let cb = after(3, done);
 
-      app.use(['/foo/', '/bar'], function (req, res) {
+      app.use(['/foo/', '/bar'], function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url + ' through ' + req.originalUrl);
       });
 
@@ -449,11 +449,11 @@ describe('app', function(){
       request(app)
       .get('/bar')
       .expect(200, 'saw GET / through /bar', cb);
-    })
+    });
 
-    it('should support array of paths with middleware array', function (done) {
-      var app = express();
-      var cb = after(2, done);
+    it('should support array of paths with middleware array', function(done) {
+      let app = express();
+      let cb = after(2, done);
 
       function fn1(req, res, next) {
         res.setHeader('x-fn-1', 'hit');
@@ -485,13 +485,13 @@ describe('app', function(){
       .expect('x-fn-2', 'hit')
       .expect('x-fn-3', 'hit')
       .expect(200, 'saw GET / through /bar', cb);
-    })
+    });
 
-    it('should support regexp path', function (done) {
-      var app = express();
-      var cb = after(4, done);
+    it('should support regexp path', function(done) {
+      let app = express();
+      let cb = after(4, done);
 
-      app.use(/^\/[a-z]oo/, function (req, res) {
+      app.use(/^\/[a-z]oo/, function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url + ' through ' + req.originalUrl);
       });
 
@@ -510,18 +510,18 @@ describe('app', function(){
       request(app)
       .get('/get/zoo')
       .expect(404, cb);
-    })
+    });
 
-    it('should support empty string path', function (done) {
-      var app = express();
+    it('should support empty string path', function(done) {
+      let app = express();
 
-      app.use('', function (req, res) {
+      app.use('', function(req, res) {
         res.send('saw ' + req.method + ' ' + req.url + ' through ' + req.originalUrl);
       });
 
       request(app)
       .get('/')
       .expect(200, 'saw GET / through /', done);
-    })
-  })
-})
+    });
+  });
+});

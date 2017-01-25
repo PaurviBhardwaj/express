@@ -1,8 +1,8 @@
-var express = require('../../');
+let express = require('../../');
 
-var app = express();
+let app = express();
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.send('Hello World');
 });
 

@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var http = require('http');
-var path = require('path');
-var extname = path.extname;
+let http = require('http');
+let path = require('path');
+let extname = path.extname;
 
 /**
  * Expose `GithubView`.
@@ -18,7 +18,7 @@ module.exports = GithubView;
  * render templates from a database etc.
  */
 
-function GithubView(name, options){
+function GithubView(name, options) {
   this.name = name;
   options = options || {};
   this.engine = options.engines[extname(name)];
@@ -31,20 +31,22 @@ function GithubView(name, options){
  * Render the view.
  */
 
-GithubView.prototype.render = function(options, fn){
-  var self = this;
-  var opts = {
+GithubView.prototype.render = function(options, fn) {
+  let self = this;
+  let opts = {
     host: 'raw.githubusercontent.com',
     port: 443,
     path: this.path,
-    method: 'GET'
+    method: 'GET',
   };
 
   https.request(opts, function(res) {
-    var buf = '';
+    let buf = '';
     res.setEncoding('utf8');
-    res.on('data', function(str){ buf += str });
-    res.on('end', function(){
+    res.on('data', function(str) {
+ buf += str; 
+});
+    res.on('end', function() {
       self.engine(buf, options, fn);
     });
   }).end();

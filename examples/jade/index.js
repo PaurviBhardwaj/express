@@ -2,15 +2,15 @@
  * Module dependencies.
  */
 
-var express = require('../../lib/express');
+let express = require('../../lib/express');
 
 // Path to our public directory
 
-var pub = __dirname + '/public';
+let pub = __dirname + '/public';
 
 // setup middleware
 
-var app = express();
+let app = express();
 app.use(express.static(pub));
 
 // Optional since express defaults to CWD/views
@@ -28,14 +28,14 @@ function User(name, email) {
 }
 
 // Dummy users
-var users = [
-    new User('tj', 'tj@vision-media.ca')
-  , new User('ciaran', 'ciaranj@gmail.com')
-  , new User('aaron', 'aaron.heckmann+github@gmail.com')
+let users = [
+    new User('tj', 'tj@vision-media.ca'),
+   new User('ciaran', 'ciaranj@gmail.com'),
+   new User('aaron', 'aaron.heckmann+github@gmail.com'),
 ];
 
-app.get('/', function(req, res){
-  res.render('users', { users: users });
+app.get('/', function(req, res) {
+  res.render('users', {users: users});
 });
 
 // change this to a better error handler in your code

@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var express = require('../..');
-var User = require('./user');
-var app = express();
+let express = require('../..');
+let User = require('./user');
+let app = express();
 
 app.set('views', __dirname);
 app.set('view engine', 'jade');
@@ -20,21 +20,19 @@ function ferrets(user) {
 // in order to expose the "count"
 // and "users" locals
 
-app.get('/', function(req, res, next){
-  User.count(function(err, count){
+app.get('/', function(req, res, next) {
+  User.count(function(err, count) {
     if (err) return next(err);
-    User.all(function(err, users){
+    User.all(function(err, users) {
       if (err) return next(err);
       res.render('user', {
         title: 'Users',
         count: count,
-        users: users.filter(ferrets)
+        users: users.filter(ferrets),
       });
-    })
-  })
+    });
+  });
 });
-
-
 
 
 // this approach is cleaner,
@@ -43,30 +41,28 @@ app.get('/', function(req, res, next){
 // on the request object
 
 function count(req, res, next) {
-  User.count(function(err, count){
+  User.count(function(err, count) {
     if (err) return next(err);
     req.count = count;
     next();
-  })
+  });
 }
 
 function users(req, res, next) {
-  User.all(function(err, users){
+  User.all(function(err, users) {
     if (err) return next(err);
     req.users = users;
     next();
-  })
+  });
 }
 
-app.get('/middleware', count, users, function(req, res, next){
+app.get('/middleware', count, users, function(req, res, next) {
   res.render('user', {
     title: 'Users',
     count: req.count,
-    users: req.users.filter(ferrets)
+    users: req.users.filter(ferrets),
   });
 });
-
-
 
 
 // this approach is much like the last
@@ -81,27 +77,27 @@ app.get('/middleware', count, users, function(req, res, next){
 // is more flexible with `req.users`.
 
 function count2(req, res, next) {
-  User.count(function(err, count){
+  User.count(function(err, count) {
     if (err) return next(err);
     res.locals.count = count;
     next();
-  })
+  });
 }
 
 function users2(req, res, next) {
-  User.all(function(err, users){
+  User.all(function(err, users) {
     if (err) return next(err);
     res.locals.users = users.filter(ferrets);
     next();
-  })
+  });
 }
 
-app.get('/middleware-locals', count2, users2, function(req, res, next){
+app.get('/middleware-locals', count2, users2, function(req, res, next) {
   // you can see now how we have much less
   // to pass to res.render(). If we have
   // several routes related to users this
   // can be a great productivity booster
-  res.render('user', { title: 'Users' });
+  res.render('user', {title: 'Users'});
 });
 
 // keep in mind that middleware may be placed anywhere

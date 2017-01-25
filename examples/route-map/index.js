@@ -2,15 +2,15 @@
  * Module dependencies.
  */
 
-var express = require('../../lib/express');
+let express = require('../../lib/express');
 
-var verbose = process.env.NODE_ENV != 'test';
+let verbose = process.env.NODE_ENV != 'test';
 
-var app = module.exports = express();
+let app = module.exports = express();
 
-app.map = function(a, route){
+app.map = function(a, route) {
   route = route || '';
-  for (var key in a) {
+  for (let key in a) {
     switch (typeof a[key]) {
       // { '/path': { ... }}
       case 'object':
@@ -25,44 +25,44 @@ app.map = function(a, route){
   }
 };
 
-var users = {
-  list: function(req, res){
+let users = {
+  list: function(req, res) {
     res.send('user list');
   },
 
-  get: function(req, res){
+  get: function(req, res) {
     res.send('user ' + req.params.uid);
   },
 
-  delete: function(req, res){
+  delete: function(req, res) {
     res.send('delete users');
-  }
+  },
 };
 
-var pets = {
-  list: function(req, res){
+let pets = {
+  list: function(req, res) {
     res.send('user ' + req.params.uid + '\'s pets');
   },
 
-  delete: function(req, res){
+  delete: function(req, res) {
     res.send('delete ' + req.params.uid + '\'s pet ' + req.params.pid);
-  }
+  },
 };
 
 app.map({
   '/users': {
-    get: users.list,
-    delete: users.delete,
+    "get": users.list,
+    "delete": users.delete,
     '/:uid': {
-      get: users.get,
+      "get": users.get,
       '/pets': {
-        get: pets.list,
+        "get": pets.list,
         '/:pid': {
-          delete: pets.delete
-        }
-      }
-    }
-  }
+          delete: pets.delete,
+        },
+      },
+    },
+  },
 });
 
 /* istanbul ignore next */

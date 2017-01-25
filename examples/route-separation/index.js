@@ -2,15 +2,15 @@
  * Module dependencies.
  */
 
-var express = require('../..');
-var app = express();
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var site = require('./site');
-var post = require('./post');
-var user = require('./user');
+let express = require('../..');
+let app = express();
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
+let methodOverride = require('method-override');
+let site = require('./site');
+let post = require('./post');
+let user = require('./user');
 
 module.exports = app;
 
@@ -26,7 +26,7 @@ if (!module.parent) {
 
 app.use(methodOverride('_method'));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 
 // General

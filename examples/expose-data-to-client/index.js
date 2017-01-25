@@ -1,7 +1,7 @@
 
-var express = require('../..');
-var logger = require('morgan');
-var app = express();
+let express = require('../..');
+let logger = require('morgan');
+let app = express();
 
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
@@ -17,10 +17,10 @@ function User(name) {
 // something like this so you
 // dont expose "secret" data.
 
-User.prototype.toJSON = function(){
+User.prototype.toJSON = function() {
   return {
     id: this.id,
-    name: this.name
+    name: this.name,
   };
 };
 
@@ -32,7 +32,7 @@ app.use(logger('dev'));
 // to the templates, so "expose" will
 // be present.
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   res.locals.expose = {};
   // you could alias this as req or res.expose
   // to make it shorter and less annoying
@@ -41,16 +41,16 @@ app.use(function(req, res, next){
 
 // pretend we loaded a user
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   req.user = new User('Tobi');
   next();
 });
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.redirect('/user');
 });
 
-app.get('/user', function(req, res){
+app.get('/user', function(req, res) {
   // we only want to expose the user
   // to the client for this route:
   res.locals.expose.user = req.user;

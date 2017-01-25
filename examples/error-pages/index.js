@@ -2,10 +2,10 @@
  * Module dependencies.
  */
 
-var express = require('../../');
-var app = module.exports = express();
-var logger = require('morgan');
-var silent = 'test' == process.env.NODE_ENV;
+let express = require('../../');
+let app = module.exports = express();
+let logger = require('morgan');
+let silent = 'test' == process.env.NODE_ENV;
 
 // general config
 app.set('views', __dirname + '/views');
@@ -24,25 +24,25 @@ silent || app.use(logger('dev'));
 
 // Routes
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.render('index.ejs');
 });
 
-app.get('/404', function(req, res, next){
+app.get('/404', function(req, res, next) {
   // trigger a 404 since no other middleware
   // will match /404 after this one, and we're not
   // responding here
   next();
 });
 
-app.get('/403', function(req, res, next){
+app.get('/403', function(req, res, next) {
   // trigger a 403 error
-  var err = new Error('not allowed!');
+  let err = new Error('not allowed!');
   err.status = 403;
   next(err);
 });
 
-app.get('/500', function(req, res, next){
+app.get('/500', function(req, res, next) {
   // trigger a generic (500) error
   next(new Error('keyboard cat!'));
 });
@@ -57,18 +57,18 @@ app.get('/500', function(req, res, next){
 // $ curl http://localhost:3000/notfound -H "Accept: application/json"
 // $ curl http://localhost:3000/notfound -H "Accept: text/plain"
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   res.status(404);
 
   // respond with html page
   if (req.accepts('html')) {
-    res.render('404', { url: req.url });
+    res.render('404', {url: req.url});
     return;
   }
 
   // respond with json
   if (req.accepts('json')) {
-    res.send({ error: 'Not found' });
+    res.send({error: 'Not found'});
     return;
   }
 
@@ -88,12 +88,12 @@ app.use(function(req, res, next){
 // would remain being executed, however here
 // we simply respond with an error page.
 
-app.use(function(err, req, res, next){
+app.use(function(err, req, res, next) {
   // we may use properties of the error object
   // here and next(err) appropriately, or if
   // we possibly recovered from the error, simply next().
   res.status(err.status || 500);
-  res.render('500', { error: err });
+  res.render('500', {error: err});
 });
 
 /* istanbul ignore next */

@@ -1,6 +1,6 @@
-var express = require('../../..');
+let express = require('../../..');
 
-var apiv1 = express.Router();
+let apiv1 = express.Router();
 
 apiv1.get('/', function(req, res) {
   res.send('Hello from APIv1 root route.');

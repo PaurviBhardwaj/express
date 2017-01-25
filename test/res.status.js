@@ -1,13 +1,13 @@
 
-var express = require('../')
-  , request = require('supertest');
+let express = require('../'),
+   request = require('supertest');
 
-describe('res', function(){
-  describe('.status(code)', function(){
-    it('should set the response .statusCode', function(done){
-      var app = express();
+describe('res', function() {
+  describe('.status(code)', function() {
+    it('should set the response .statusCode', function(done) {
+      let app = express();
 
-      app.use(function(req, res){
+      app.use(function(req, res) {
         res.status(201).end('Created');
       });
 
@@ -15,6 +15,6 @@ describe('res', function(){
       .get('/')
       .expect('Created')
       .expect(201, done);
-    })
-  })
-})
+    });
+  });
+});

@@ -6,14 +6,14 @@
  * Module dependencies.
  */
 
-var express = require('../..');
-var redis = require('redis');
+let express = require('../..');
+let redis = require('redis');
 
-var db = redis.createClient();
+let db = redis.createClient();
 
 // npm install redis
 
-var app = express();
+let app = express();
 
 app.set('view engine', 'jade');
 app.set('views', __dirname);
@@ -30,7 +30,7 @@ db.sadd('cat', 'luna');
  * GET the search page.
  */
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.render('search');
 });
 
@@ -38,9 +38,9 @@ app.get('/', function(req, res){
  * GET search for :query.
  */
 
-app.get('/search/:query?', function(req, res){
-  var query = req.params.query;
-  db.smembers(query, function(err, vals){
+app.get('/search/:query?', function(req, res) {
+  let query = req.params.query;
+  db.smembers(query, function(err, vals) {
     if (err) return res.send(500);
     res.send(vals);
   });
@@ -53,7 +53,7 @@ app.get('/search/:query?', function(req, res){
  * template.
  */
 
-app.get('/client.js', function(req, res){
+app.get('/client.js', function(req, res) {
   res.sendFile(__dirname + '/client.js');
 });
 

@@ -1,12 +1,12 @@
 
-var express = require('../')
-  , request = require('supertest');
+let express = require('../'),
+   request = require('supertest');
 
-describe('throw after .end()', function(){
-  it('should fail gracefully', function(done){
-    var app = express();
+describe('throw after .end()', function() {
+  it('should fail gracefully', function(done) {
+    let app = express();
 
-    app.get('/', function(req, res){
+    app.get('/', function(req, res) {
       res.end('yay');
       throw new Error('boom');
     });
@@ -15,5 +15,5 @@ describe('throw after .end()', function(){
     .get('/')
     .expect('yay')
     .expect(200, done);
-  })
-})
+  });
+});

@@ -2,10 +2,10 @@
  * Module dependencies.
  */
 
-var express = require('../../');
-var logger = require('morgan');
-var app = module.exports = express();
-var test = app.get('env') == 'test';
+let express = require('../../');
+let logger = require('morgan');
+let app = module.exports = express();
+let test = app.get('env') == 'test';
 
 if (!test) app.use(logger('dev'));
 
@@ -24,17 +24,17 @@ function error(err, req, res, next) {
   res.send('Internal Server Error');
 }
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   // Caught and passed down to the errorHandler middleware
   throw new Error('something broke!');
 });
 
-app.get('/next', function(req, res, next){
+app.get('/next', function(req, res, next) {
   // We can also pass exceptions to next()
   // The reason for process.nextTick() is to show that
   // next() can be called inside an async operation,
   // in real life it can be a DB read or HTTP request.
-  process.nextTick(function(){
+  process.nextTick(function() {
     next(new Error('oh no!'));
   });
 });

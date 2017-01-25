@@ -1,36 +1,36 @@
 
-var express = require('../')
-  , request = require('supertest');
+let express = require('../'),
+   request = require('supertest');
 
-describe('req', function(){
-  describe('.query', function(){
-    it('should default to {}', function(done){
-      var app = createApp();
+describe('req', function() {
+  describe('.query', function() {
+    it('should default to {}', function(done) {
+      let app = createApp();
 
       request(app)
       .get('/')
       .expect(200, '{}', done);
     });
 
-    it('should default to parse complex keys', function (done) {
-      var app = createApp();
+    it('should default to parse complex keys', function(done) {
+      let app = createApp();
 
       request(app)
       .get('/?user[name]=tj')
       .expect(200, '{"user":{"name":"tj"}}', done);
     });
 
-    describe('when "query parser" is extended', function () {
-      it('should parse complex keys', function (done) {
-        var app = createApp('extended');
+    describe('when "query parser" is extended', function() {
+      it('should parse complex keys', function(done) {
+        let app = createApp('extended');
 
         request(app)
         .get('/?user[name]=tj')
         .expect(200, '{"user":{"name":"tj"}}', done);
       });
 
-      it('should parse parameters with dots', function (done) {
-        var app = createApp('extended');
+      it('should parse parameters with dots', function(done) {
+        let app = createApp('extended');
 
         request(app)
         .get('/?user.name=tj')
@@ -38,9 +38,9 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser" is simple', function () {
-      it('should not parse complex keys', function (done) {
-        var app = createApp('simple');
+    describe('when "query parser" is simple', function() {
+      it('should not parse complex keys', function(done) {
+        let app = createApp('simple');
 
         request(app)
         .get('/?user%5Bname%5D=tj')
@@ -48,9 +48,9 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser" is a function', function () {
-      it('should parse using function', function (done) {
-        var app = createApp(function (str) {
+    describe('when "query parser" is a function', function() {
+      it('should parse using function', function(done) {
+        let app = createApp(function(str) {
           return {'length': (str || '').length};
         });
 
@@ -60,9 +60,9 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser" disabled', function () {
-      it('should not parse query', function (done) {
-        var app = createApp(false);
+    describe('when "query parser" disabled', function() {
+      it('should not parse query', function(done) {
+        let app = createApp(false);
 
         request(app)
         .get('/?user%5Bname%5D=tj')
@@ -70,9 +70,9 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser" disabled', function () {
-      it('should not parse complex keys', function (done) {
-        var app = createApp(true);
+    describe('when "query parser" disabled', function() {
+      it('should not parse complex keys', function(done) {
+        let app = createApp(true);
 
         request(app)
         .get('/?user%5Bname%5D=tj')
@@ -80,14 +80,14 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser fn" is missing', function () {
-      it('should act like "extended"', function (done) {
-        var app = express();
+    describe('when "query parser fn" is missing', function() {
+      it('should act like "extended"', function(done) {
+        let app = express();
 
         delete app.settings['query parser'];
         delete app.settings['query parser fn'];
 
-        app.use(function (req, res) {
+        app.use(function(req, res) {
           res.send(req.query);
         });
 
@@ -97,22 +97,22 @@ describe('req', function(){
       });
     });
 
-    describe('when "query parser" an unknown value', function () {
-      it('should throw', function () {
+    describe('when "query parser" an unknown value', function() {
+      it('should throw', function() {
         createApp.bind(null, 'bogus').should.throw(/unknown value.*query parser/);
       });
     });
-  })
-})
+  });
+});
 
 function createApp(setting) {
-  var app = express();
+  let app = express();
 
   if (setting !== undefined) {
     app.set('query parser', setting);
   }
 
-  app.use(function (req, res) {
+  app.use(function(req, res) {
     res.send(req.query);
   });
 

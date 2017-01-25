@@ -2,20 +2,20 @@
  * Module dependencies.
  */
 
-var express = require('../../..');
-var fs = require('fs');
+let express = require('../../..');
+let fs = require('fs');
 
-module.exports = function(parent, options){
-  var verbose = options.verbose;
-  fs.readdirSync(__dirname + '/../controllers').forEach(function(name){
+module.exports = function(parent, options) {
+  let verbose = options.verbose;
+  fs.readdirSync(__dirname + '/../controllers').forEach(function(name) {
     verbose && console.log('\n   %s:', name);
-    var obj = require('./../controllers/' + name);
+    let obj = require('./../controllers/' + name);
     var name = obj.name || name;
-    var prefix = obj.prefix || '';
-    var app = express();
-    var handler;
-    var method;
-    var path;
+    let prefix = obj.prefix || '';
+    let app = express();
+    let handler;
+    let method;
+    let path;
 
     // allow specifying the view engine
     if (obj.engine) app.set('view engine', obj.engine);
@@ -23,7 +23,7 @@ module.exports = function(parent, options){
 
     // generate routes based
     // on the exported methods
-    for (var key in obj) {
+    for (let key in obj) {
       // "reserved" exports
       if (~['name', 'prefix', 'engine', 'before'].indexOf(key)) continue;
       // route exports

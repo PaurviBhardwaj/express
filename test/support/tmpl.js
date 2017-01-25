@@ -1,6 +1,6 @@
-var fs = require('fs');
+let fs = require('fs');
 
-var variableRegExp = /\$([0-9a-zA-Z\.]+)/g;
+let variableRegExp = /\$([0-9a-zA-Z\.]+)/g;
 
 module.exports = function renderFile(fileName, options, callback) {
   function onReadFile(err, str) {
@@ -23,10 +23,10 @@ module.exports = function renderFile(fileName, options, callback) {
 
 function generateVariableLookup(data) {
   return function variableLookup(str, path) {
-    var parts = path.split('.');
-    var value = data;
+    let parts = path.split('.');
+    let value = data;
 
-    for (var i = 0; i < parts.length; i++) {
+    for (let i = 0; i < parts.length; i++) {
       value = value[parts[i]];
     }
 

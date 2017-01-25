@@ -2,10 +2,10 @@
  * Module dependencies.
  */
 
-var express = require('../..');
-var logger = require('morgan');
-var path = require('path');
-var app = express();
+let express = require('../..');
+let logger = require('morgan');
+let path = require('path');
+let app = express();
 
 // log requests
 app.use(logger('dev'));

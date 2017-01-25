@@ -1,9 +1,9 @@
-var express = require('../');
-var request = require('supertest');
+let express = require('../');
+let request = require('supertest');
 
-describe('app.route', function(){
-  it('should return a new route', function(done){
-    var app = express();
+describe('app.route', function() {
+  it('should return a new route', function(done) {
+    let app = express();
 
     app.route('/foo')
     .get(function(req, res) {
@@ -18,8 +18,8 @@ describe('app.route', function(){
     .expect('post', done);
   });
 
-  it('should all .VERB after .all', function(done){
-    var app = express();
+  it('should all .VERB after .all', function(done) {
+    let app = express();
 
     app.route('/foo')
     .all(function(req, res, next) {
@@ -37,8 +37,8 @@ describe('app.route', function(){
     .expect('post', done);
   });
 
-  it('should support dynamic routes', function(done){
-    var app = express();
+  it('should support dynamic routes', function(done) {
+    let app = express();
 
     app.route('/:foo')
     .get(function(req, res) {
@@ -50,8 +50,8 @@ describe('app.route', function(){
     .expect('test', done);
   });
 
-  it('should not error on empty routes', function(done){
-    var app = express();
+  it('should not error on empty routes', function(done) {
+    let app = express();
 
     app.route('/:foo');
 

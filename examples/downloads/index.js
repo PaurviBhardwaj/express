@@ -2,10 +2,10 @@
  * Module dependencies.
  */
 
-var express = require('../../');
-var app = module.exports = express();
+let express = require('../../');
+let app = module.exports = express();
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.send('<ul>'
     + '<li>Download <a href="/files/amazing.txt">amazing.txt</a>.</li>'
     + '<li>Download <a href="/files/missing.txt">missing.txt</a>.</li>'
@@ -15,11 +15,11 @@ app.get('/', function(req, res){
 
 // /files/* is accessed via req.params[0]
 // but here we name it :file
-app.get('/files/:file(*)', function(req, res, next){
-  var file = req.params.file;
-  var path = __dirname + '/files/' + file;
+app.get('/files/:file(*)', function(req, res, next) {
+  let file = req.params.file;
+  let path = __dirname + '/files/' + file;
 
-  res.download(path, function(err){
+  res.download(path, function(err) {
     if (!err) return; // file sent
     if (err && err.status !== 404) return next(err); // non-404 error
     // file for download not found

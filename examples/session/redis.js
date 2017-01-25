@@ -2,15 +2,15 @@
  * Module dependencies.
  */
 
-var express = require('../..');
-var logger = require('morgan');
-var session = require('express-session');
+let express = require('../..');
+let logger = require('morgan');
+let session = require('express-session');
 
 // pass the express to the connect redis module
 // allowing it to inherit from session.Store
-var RedisStore = require('connect-redis')(session);
+let RedisStore = require('connect-redis')(session);
 
-var app = express();
+let app = express();
 
 app.use(logger('dev'));
 
@@ -19,11 +19,11 @@ app.use(session({
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   secret: 'keyboard cat',
-  store: new RedisStore
+  store: new RedisStore,
 }));
 
-app.get('/', function(req, res){
-  var body = '';
+app.get('/', function(req, res) {
+  let body = '';
   if (req.session.views) {
     ++req.session.views;
   } else {
