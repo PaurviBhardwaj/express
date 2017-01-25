@@ -1,9 +1,25 @@
 
-var express = require('../')
-  , request = require('supertest')
-  , assert = require('assert');
+var assert = require('assert');
+var express = require('..');
+var methods = require('methods');
+var request = require('supertest');
+var utils = require('./support/utils');
 
 describe('res', function(){
+  describe('.send()', function(){
+    it('should set body to ""', function(done){
+      var app = express();
+
+      app.use(function(req, res){
+        res.send();
+      });
+
+      request(app)
+      .get('/')
+      .expect(200, '', done);
+    })
+  })
+
   describe('.send(null)', function(){
     it('should set body to ""', function(done){
       var app = express();
@@ -15,7 +31,7 @@ describe('res', function(){
       request(app)
       .get('/')
       .expect('Content-Length', '0')
-      .expect('', done);
+      .expect(200, '', done);
     })
   })
 
@@ -29,10 +45,7 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .expect('', function(req, res){
-        res.header.should.not.have.property('content-length');
-        done();
-      });
+      .expect(200, '', done);
     })
   })
 
@@ -91,43 +104,22 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .end(function(err, res){
-        res.headers.should.have.property('content-type', 'text/html; charset=utf-8');
-        res.text.should.equal('<p>hey</p>');
-        res.statusCode.should.equal(200);
-        done();
-      })
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(200, '<p>hey</p>', done);
     })
 
-    it('should set ETag', function(done){
+    it('should set ETag', function (done) {
       var app = express();
 
-      app.use(function(req, res){
+      app.use(function (req, res) {
         var str = Array(1000).join('-');
         res.send(str);
       });
 
       request(app)
       .get('/')
-      .expect('ETag', 'W/"3e7-8084ccd1"')
-      .end(done);
-    })
-
-    it('should not set ETag for non-GET/HEAD', function(done){
-      var app = express();
-
-      app.use(function(req, res){
-        var str = Array(1000).join('-');
-        res.send(str);
-      });
-
-      request(app)
-      .post('/')
-      .end(function(err, res){
-        if (err) return done(err);
-        assert(!res.header.etag, 'has an ETag');
-        done();
-      });
+      .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+      .expect(200, done);
     })
 
     it('should not override Content-Type', function(done){
@@ -180,26 +172,22 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .end(function(err, res){
-        res.headers.should.have.property('content-type', 'application/octet-stream');
-        res.text.should.equal('hello');
-        res.statusCode.should.equal(200);
-        done();
-      })
+      .expect('Content-Type', 'application/octet-stream')
+      .expect(200, 'hello', done);
     })
 
-    it('should set ETag', function(done){
+    it('should set ETag', function (done) {
       var app = express();
 
-      app.use(function(req, res){
+      app.use(function (req, res) {
         var str = Array(1000).join('-');
         res.send(new Buffer(str));
       });
 
       request(app)
       .get('/')
-      .expect('ETag', 'W/"3e7-8084ccd1"')
-      .end(done);
+      .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+      .expect(200, done);
     })
 
     it('should not override Content-Type', function(done){
@@ -211,12 +199,8 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .end(function(err, res){
-        res.headers.should.have.property('content-type', 'text/plain; charset=utf-8');
-        res.text.should.equal('hey');
-        res.statusCode.should.equal(200);
-        done();
-      })
+      .expect('Content-Type', 'text/plain; charset=utf-8')
+      .expect(200, 'hey', done);
     })
   })
 
@@ -259,13 +243,10 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .end(function(err, res){
-        res.headers.should.not.have.property('content-type');
-        res.headers.should.not.have.property('content-length');
-        res.headers.should.not.have.property('transfer-encoding');
-        res.text.should.equal('');
-        done();
-      })
+      .expect(utils.shouldNotHaveHeader('Content-Type'))
+      .expect(utils.shouldNotHaveHeader('Content-Length'))
+      .expect(utils.shouldNotHaveHeader('Transfer-Encoding'))
+      .expect(204, '', done);
     })
   })
 
@@ -279,13 +260,10 @@ describe('res', function(){
 
       request(app)
       .get('/')
-      .end(function(err, res){
-        res.headers.should.not.have.property('content-type');
-        res.headers.should.not.have.property('content-length');
-        res.headers.should.not.have.property('transfer-encoding');
-        res.text.should.equal('');
-        done();
-      })
+      .expect(utils.shouldNotHaveHeader('Content-Type'))
+      .expect(utils.shouldNotHaveHeader('Content-Length'))
+      .expect(utils.shouldNotHaveHeader('Transfer-Encoding'))
+      .expect(304, '', done);
     })
   })
 
@@ -349,12 +327,12 @@ describe('res', function(){
     .expect('{"foo":"bar"}', done);
   })
 
-  describe('"etag" setting', function(){
-    describe('when enabled', function(){
-      it('should send ETag', function(done){
+  describe('"etag" setting', function () {
+    describe('when enabled', function () {
+      it('should send ETag', function (done) {
         var app = express();
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.send('kajdslfkasdf');
         });
 
@@ -362,76 +340,95 @@ describe('res', function(){
 
         request(app)
         .get('/')
-        .expect('etag', 'W/"c-5aee35d8"', done)
-      })
-
-      it('should send ETag for empty string response', function(done){
-        var app = express()
-
-        app.use(function(req, res){
-          res.send('')
-        });
-
-        app.enable('etag')
-
-        request(app)
-        .get('/')
-        .expect('etag', 'W/"0-0"', done)
-      })
-
-      it('should send ETag for long response', function(done){
-        var app = express();
-
-        app.use(function(req, res){
-          var str = Array(1000).join('-');
-          res.send(str);
-        });
-
-        app.enable('etag');
-
-        request(app)
-        .get('/')
-        .expect('etag', 'W/"3e7-8084ccd1"', done)
+        .expect('ETag', 'W/"c-ZUfd0NJ26qwjlKF4r8qb2g"')
+        .expect(200, done);
       });
 
-      it('should not override ETag when manually set', function(done){
-        var app = express();
+      methods.forEach(function (method) {
+        if (method === 'connect') return;
 
-        app.use(function(req, res){
-          res.set('etag', '"asdf"');
-          res.send('hello!');
-        });
+        it('should send ETag in response to ' + method.toUpperCase() + ' request', function (done) {
+          var app = express();
 
-        app.enable('etag');
+          app[method]('/', function (req, res) {
+            res.send('kajdslfkasdf');
+          });
 
-        request(app)
-        .get('/')
-        .expect('etag', '"asdf"', done)
-      });
-
-      it('should not send ETag for res.send()', function(done){
-        var app = express()
-
-        app.use(function(req, res){
-          res.send()
-        });
-
-        app.enable('etag')
-
-        request(app)
-        .get('/')
-        .end(function(err, res){
-          res.headers.should.not.have.property('etag');
-          done();
+          request(app)
+          [method]('/')
+          .expect('ETag', 'W/"c-ZUfd0NJ26qwjlKF4r8qb2g"')
+          .expect(200, done);
         })
+      });
+
+      it('should send ETag for empty string response', function (done) {
+        var app = express();
+
+        app.use(function (req, res) {
+          res.send('');
+        });
+
+        app.enable('etag');
+
+        request(app)
+        .get('/')
+        .expect('ETag', 'W/"0-1B2M2Y8AsgTpgAmY7PhCfg"')
+        .expect(200, done);
+      })
+
+      it('should send ETag for long response', function (done) {
+        var app = express();
+
+        app.use(function (req, res) {
+          var str = Array(1000).join('-');
+          res.send(str);
+        });
+
+        app.enable('etag');
+
+        request(app)
+        .get('/')
+        .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+        .expect(200, done);
+      });
+
+      it('should not override ETag when manually set', function (done) {
+        var app = express();
+
+        app.use(function (req, res) {
+          res.set('etag', '"asdf"');
+          res.send('hello!');
+        });
+
+        app.enable('etag');
+
+        request(app)
+        .get('/')
+        .expect('ETag', '"asdf"')
+        .expect(200, done);
+      });
+
+      it('should not send ETag for res.send()', function (done) {
+        var app = express();
+
+        app.use(function (req, res) {
+          res.send();
+        });
+
+        app.enable('etag');
+
+        request(app)
+        .get('/')
+        .expect(utils.shouldNotHaveHeader('ETag'))
+        .expect(200, done);
       })
     });
 
-    describe('when disabled', function(){
-      it('should send no ETag', function(done){
+    describe('when disabled', function () {
+      it('should send no ETag', function (done) {
         var app = express();
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           var str = Array(1000).join('-');
           res.send(str);
         });
@@ -440,98 +437,98 @@ describe('res', function(){
 
         request(app)
         .get('/')
-        .end(function(err, res){
-          res.headers.should.not.have.property('etag');
-          done();
-        });
+        .expect(utils.shouldNotHaveHeader('ETag'))
+        .expect(200, done);
       });
 
-      it('should send ETag when manually set', function(done){
+      it('should send ETag when manually set', function (done) {
         var app = express();
 
         app.disable('etag');
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.set('etag', '"asdf"');
           res.send('hello!');
         });
 
         request(app)
         .get('/')
-        .expect('etag', '"asdf"', done)
+        .expect('ETag', '"asdf"')
+        .expect(200, done);
       });
     });
 
-    describe('when "strong"', function(){
-      it('should send strong ETag', function(done){
-        var app = express()
+    describe('when "strong"', function () {
+      it('should send strong ETag', function (done) {
+        var app = express();
 
         app.set('etag', 'strong');
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.send('hello, world!');
         });
 
         request(app)
         .get('/')
-        .expect('etag', '"Otu60XkfuuPskIiUxJY4cA=="', done)
+        .expect('ETag', '"d-Otu60XkfuuPskIiUxJY4cA"')
+        .expect(200, done);
       })
     })
 
-    describe('when "weak"', function(){
-      it('should send weak ETag', function(done){
-        var app = express()
+    describe('when "weak"', function () {
+      it('should send weak ETag', function (done) {
+        var app = express();
 
         app.set('etag', 'weak');
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.send('hello, world!');
         });
 
         request(app)
         .get('/')
-        .expect('etag', 'W/"d-58988d13"', done)
+        .expect('ETag', 'W/"d-Otu60XkfuuPskIiUxJY4cA"')
+        .expect(200, done)
       })
     })
 
-    describe('when a function', function(){
-      it('should send custom ETag', function(done){
-        var app = express()
+    describe('when a function', function () {
+      it('should send custom ETag', function (done) {
+        var app = express();
 
-        app.set('etag', function(body, encoding){
+        app.set('etag', function (body, encoding) {
           var chunk = !Buffer.isBuffer(body)
             ? new Buffer(body, encoding)
             : body;
-          chunk.toString().should.equal('hello, world!')
-          return '"custom"'
+          chunk.toString().should.equal('hello, world!');
+          return '"custom"';
         });
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.send('hello, world!');
         });
 
         request(app)
         .get('/')
-        .expect('etag', '"custom"', done)
+        .expect('ETag', '"custom"')
+        .expect(200, done);
       })
 
-      it('should not send falsy ETag', function(done){
-        var app = express()
+      it('should not send falsy ETag', function (done) {
+        var app = express();
 
-        app.set('etag', function(body, encoding){
-          return undefined
+        app.set('etag', function (body, encoding) {
+          return undefined;
         });
 
-        app.use(function(req, res){
+        app.use(function (req, res) {
           res.send('hello, world!');
         });
 
         request(app)
         .get('/')
-        .end(function(err, res){
-          res.headers.should.not.have.property('etag')
-          done();
-        })
+        .expect(utils.shouldNotHaveHeader('ETag'))
+        .expect(200, done);
       })
     })
   })
